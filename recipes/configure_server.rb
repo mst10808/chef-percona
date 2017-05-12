@@ -124,7 +124,11 @@ end
 
 # install db to the data directory
 execute "setup mysql datadir" do
-  command "mysql_install_db --defaults-file=#{percona["main_config_file"]} --user=#{user}" # rubocop:disable LineLength
+  if node["percona"]["version"] <= "5.6"
+    command "mysql_install_db --defaults-file=#{percona["main_config_file"]} --user=#{user}" # rubocop:disable LineLength
+  else
+    command "mysqld --defaults-file=#{percona["main_config_file"]} --initialize-insecure --user=#{user}" # rubocop:disable LineLength
+  end
   not_if "test -f #{datadir}/mysql/user.frm"
   action :nothing
 end
@@ -154,6 +158,9 @@ template percona["main_config_file"] do
   group "root"
   mode "0644"
   sensitive true
+  if node["percona"]["version"] >= "5.7"
+    manage_symlink_source true
+  end
   if Array(server["role"]).include?("cluster")
     variables(wsrep_sst_auth: wsrep_sst_auth)
   end

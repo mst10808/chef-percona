@@ -497,7 +497,7 @@ myisam_max_sort_file_size = <%= node["percona"]["server"]["myisam_max_sort_file_
 myisam_repair_threads = <%= node["percona"]["server"]["myisam_repair_threads"] %>
 
 # Automatically check and repair not properly closed MyISAM tables.
-<% if node["percona"]["server"]["myisam_recover_options"] %>
+<% if node["percona"]["server"]["myisam_recover_options"] && node["percona"]["version"] <= "5.6" %>
 myisam_recover
 <% end %>
 
@@ -520,7 +520,9 @@ skip-innodb
 # start to allocate it from the OS.  As this is fast enough on most
 # recent operating systems, you normally do not need to change this
 # value. SHOW INNODB STATUS will display the current amount used.
+<% if node["percona"]["version"] <= "5.6" %>
 innodb_additional_mem_pool_size = <%= node["percona"]["server"]["innodb_additional_mem_pool_size"] %>
+<% end %>
 
 # This config file assumes a main memory of at least 8G
 innodb_buffer_pool_size = <%= node["percona"]["server"]["innodb_buffer_pool_size"] %>
