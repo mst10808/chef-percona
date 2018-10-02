@@ -16,6 +16,7 @@ when "debian"
   abi_version = case version
                 when "5.5" then "18"
                 when "5.6" then "18.1"
+                when "5.7" then "10"
                 else ""
                 end
 
